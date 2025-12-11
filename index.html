@@ -270,7 +270,7 @@
     }
     
     const cart = loadCart();
-    cart.push({ name: productName, id: Date.now() });
+    cart.push({ name: productName });
     saveCart(cart);
     
     input.value = '';
@@ -286,12 +286,14 @@
   }
   
   // Allow adding product with Enter key
-  document.getElementById('productInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      addProduct();
-    }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('productInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        addProduct();
+      }
+    });
+    
+    // Initialize cart on page load
+    renderCart();
   });
-  
-  // Initialize cart on page load
-  renderCart();
 </script>
