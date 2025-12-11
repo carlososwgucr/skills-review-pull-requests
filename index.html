@@ -1,4 +1,4 @@
-<title>Tic Tac Toe</title>
+<title>Tic Tac Toe & Shopping Cart</title>
 <meta charset="UTF-8" />
 
 <style>
@@ -18,36 +18,113 @@
   table {
     margin: 5rem auto;
   }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .shopping-cart {
+    margin: 3rem auto;
+    max-width: 600px;
+    text-align: left;
+  }
+  .product-list {
+    margin: 2rem 0;
+  }
+  .product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+  }
+  .product-item button {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  .add-product {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .add-product input {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 16px;
+    text-align: left;
+  }
+  .add-product button {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  .remove-btn {
+    background: #dc3545;
+    color: white;
+  }
+  .cart-empty {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+  }
   @media (prefers-color-scheme: dark) {
     body,
     input {
       background: #222;
       color: #ccc;
     }
+    .product-item {
+      border-color: #555;
+      background: #333;
+    }
   }
 </style>
 
-<h1>Tic Tac Toe</h1>
+<div class="container">
+  <h1>Tic Tac Toe</h1>
 
-<table>
-  <tr>
-    <td><input type="checkbox" /></td>
-    <td><input type="checkbox" /></td>
-    <td><input type="checkbox" /></td>
-  </tr>
-  <tr>
-    <td><input type="checkbox" /></td>
-    <td><input type="checkbox" /></td>
-    <td><input type="checkbox" /></td>
-  </tr>
-  <tr>
-    <td><input type="checkbox" /></td>
-    <td><input type="checkbox" /></td>
-    <td><input type="checkbox" /></td>
-  </tr>
-</table>
+  <table>
+    <tr>
+      <td><input type="checkbox" /></td>
+      <td><input type="checkbox" /></td>
+      <td><input type="checkbox" /></td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" /></td>
+      <td><input type="checkbox" /></td>
+      <td><input type="checkbox" /></td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" /></td>
+      <td><input type="checkbox" /></td>
+      <td><input type="checkbox" /></td>
+    </tr>
+  </table>
 
-<h2 hidden>Game over, refresh to play again 🧑‍💻 🤖!</h2>
+  <h2 hidden>Game over, refresh to play again 🧑‍💻 🤖!</h2>
+
+  <div class="shopping-cart">
+    <h2>Shopping Cart / Carrito de Compras</h2>
+    
+    <div class="add-product">
+      <input type="text" id="productInput" placeholder="Enter product name / Nombre del producto" />
+      <button onclick="addProduct()">Add / Agregar</button>
+    </div>
+    
+    <div id="cartItems" class="product-list">
+      <div class="cart-empty">No products in cart / No hay productos en el carrito</div>
+    </div>
+  </div>
+</div>
 
 <script>
   // Initialization
@@ -149,4 +226,74 @@
     }
     return array;
   }
+
+  // Shopping Cart functionality with localStorage persistence
+  const CART_STORAGE_KEY = 'shoppingCart';
+  
+  // Load cart from localStorage
+  function loadCart() {
+    const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+    return savedCart ? JSON.parse(savedCart) : [];
+  }
+  
+  // Save cart to localStorage
+  function saveCart(cart) {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  }
+  
+  // Render cart items
+  function renderCart() {
+    const cart = loadCart();
+    const cartItemsDiv = document.getElementById('cartItems');
+    
+    if (cart.length === 0) {
+      cartItemsDiv.innerHTML = '<div class="cart-empty">No products in cart / No hay productos en el carrito</div>';
+      return;
+    }
+    
+    cartItemsDiv.innerHTML = cart.map((item, index) => `
+      <div class="product-item">
+        <span>${item.name}</span>
+        <button class="remove-btn" onclick="removeProduct(${index})">Remove / Eliminar</button>
+      </div>
+    `).join('');
+  }
+  
+  // Add product to cart
+  function addProduct() {
+    const input = document.getElementById('productInput');
+    const productName = input.value.trim();
+    
+    if (!productName) {
+      alert('Please enter a product name / Por favor ingrese un nombre de producto');
+      return;
+    }
+    
+    const cart = loadCart();
+    cart.push({ name: productName });
+    saveCart(cart);
+    
+    input.value = '';
+    renderCart();
+  }
+  
+  // Remove product from cart
+  function removeProduct(index) {
+    const cart = loadCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+    renderCart();
+  }
+  
+  // Allow adding product with Enter key
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('productInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        addProduct();
+      }
+    });
+    
+    // Initialize cart on page load
+    renderCart();
+  });
 </script>
